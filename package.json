@@ -2,12 +2,10 @@
   "name": "panda-vue-carousel",
   "version": "0.0.1",
   "description": "silky carousel",
-  "main": "panda-vue-carousel.js",
+  "main": "Carousel.vue",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "build:example": "node build/build.js",
-    "build": "rollup --environment NODE_ENV:production -c build/rollup.config.js && uglifyjs vue-path-tab.js -cm --comments -o panda-vue-carouse.min.js"
   },
   "repository": {
     "type": "git",
