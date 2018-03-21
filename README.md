@@ -9,6 +9,10 @@
 git clone https://github.com/webkonglong/panda-vue-carousel.git
 cd panda-vue-carousel
 npm install
+
+更改根目录webpack.config.js第5行第6行
+注视第5行(entry: './src/lib/index.js',)
+打开第六行(entry: './src/main.js',)
 npm run dev
 ```
 

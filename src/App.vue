@@ -1,32 +1,32 @@
 <template>
   <div class="home">
-    <Carousel :data="list" :padding="30" :margin="10">
+    <carousel :data="list" :padding="30" :margin="10">
       <img class="step-1" slot-scope="props" :src="props.data.src" alt="" />
-    </Carousel>
+    </carousel>
     <div class="hr">-----分割线-----</div>
     <div class="step-2">
-      <Carousel :data="list">
+      <carousel :data="list">
         <img slot-scope="props" :src="props.data.src" alt="" />
-      </Carousel>
+      </carousel>
     </div>
   </div>
 </template>
 
 <script>
-import Carousel from "../../Carousel"
+import Carousel from "./lib/Carousel"
 
 export default {
   name: 'app',
   data () {
     return {
       list: [{
-        src: require('@/assets/1.jpg')
+        src: require('./assets/1.jpg')
       }, {
-        src: require('@/assets/2.jpg')
+        src: require('./assets/2.jpg')
       }, {
-        src: require('@/assets/3.jpg')
+        src: require('./assets/3.jpg')
       }, {
-        src: require('@/assets/4.jpg')
+        src: require('./assets/4.jpg')
       }]
     }
   },
@@ -37,9 +37,16 @@ export default {
 </script>
 
 <style>
-  .step-1 {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  img {
     display: block;
     width: 100%;
+  }
+  .step-1 {
     border-radius: 10px;
   }
   .hr {
