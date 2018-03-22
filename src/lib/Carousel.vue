@@ -74,6 +74,7 @@ export default {
   mounted () {
     setTimeout(() => {
       this.starDom()
+      this.dom.webkitTransition = `translate3d(${this.infinite ? this.width * (-this.crevice - 1) + this.crevice * this.padding / 2 : 0}px, 0px, 0px)`
       this.dom.transform = `translate3d(${this.infinite ? this.width * (-this.crevice - 1) + this.crevice * this.padding / 2 : 0}px, 0px, 0px)`
       this.autoPlay && this.infinite && this.setTime()
     }, 50)
@@ -89,6 +90,8 @@ export default {
     touchstart (e) {
       if (this.slideing) {
         this.clearTimeOut()
+        this.dom.transition = '0s'
+        this.dom.webkitTransition = '0s'
         this.position = this.getTransform()
         this.startX = e.touches[e.touches.length - 1].clientX
       }
@@ -99,31 +102,48 @@ export default {
         let moveX = e.touches[e.touches.length - 1].clientX - this.startX
         if (this.isTouchmove(moveX)) {
           this.moveX = moveX
-          this.setTransform(this.moveX + this.position)
+          this.setTranslate(this.moveX + this.position)
         }
       }
     },
     touchend () {
       this.clearTimeOut()
-      this.setTransform(this.moveX + this.position)
-      let position = this.getTransform()
-      position += this.moveX > 0 ? this.width * 0.3 : this.width * -0.3
-      // 移动百分之二十就切换
-      let index = Math.round(position / this.width) * -1
-      this.index = index
+      this.setTranslate(this.moveX + this.position)
+      if (this.moveX > 0 && this.moveX / this.width > 0.2) {
+        this.index--
+      }
+      if (this.moveX < 0 && this.moveX / -this.width > 0.2) {
+        this.index++
+      }
       this.move('touch')
     },
     isTouchmove (moveX) {
       return this.infinite ? true : (moveX + this.position <= 0 && moveX + this.position > (this.list.length - 1) * -this.width)
     },
-    setTransform (num) {
-      this.dom.transform = `translate3d(${num + this.crevice * this.padding / 2}px, 0px, 0px)`
+    setTranslate (d) {
+      if ('transform' in document.documentElement.style) {
+        this.transform(d)
+      } else {
+        this.webkitTransform(d)
+      }
+    },
+    transform (d) {
+      this.dom.transform = `translate3d(${d + this.crevice * this.padding / 2}px, 0, 0)`
+      this.dom.transform = `webkikTranslate3d(${d + this.crevice * this.padding / 2}px, 0, 0)`
+    },
+    webkitTransform (d) {
+      this.dom.webkitTransform = `translate3d(${d + this.crevice * this.padding / 2}px, 0, 0)`
+      this.dom.webkitTransform = `webkikTranslate3d(${d + this.crevice * this.padding / 2}px, 0, 0)`
     },
     getTransform () { // 获取当前轮播的偏移量
-      let position = this.dom.transform
-      position = position.substring(12)
-      position = position.match(/(\S*)px/)[1]
-      return Number(position)
+      if ('transform' in document.documentElement.style) {
+        let position = this.dom.transform
+        position = position.substring(12)
+        position = position.match(/(\S*)px/)[1]
+        return Number(position)
+      } else {
+        return this.index * -1 * this.width + this.crevice * this.padding / 2
+      }
     },
     preventDefault (e) {
       e.preventDefault()
@@ -131,20 +151,23 @@ export default {
     move (type) {
       this.slideing = false
       this.dom.transition = type === 'touch' ? '250ms' : this.duration + 'ms'
-      this.setTransform(this.index * -1 * this.width)
+      this.dom.webkitTransition = type === 'touch' ? '250ms' : this.duration + 'ms'
+
+      this.setTranslate(this.index * -1 * this.width)
       this.moveX = 0
       this.startX = -1 // 保证下次重新赋值
       this.autoPlay && this.infinite && this.setTime()
       let timeDuration = type === 'touch' ? '250' : this.duration
       this.infinite && setTimeout(() => {
         this.dom.transition = '0s'
+        this.dom.webkitTransition = '0s'
         if (this.index === this.list.length - this.crevice - 1) {
           this.index = this.crevice + 1
-          this.setTransform(this.index * -1 * this.width)
+          this.setTranslate(this.index * -1 * this.width)
         }
         if (this.index === +this.crevice) {
           this.index = this.list.length - this.crevice - 2
-          this.setTransform(this.index * -1 * this.width)
+          this.setTranslate(this.index * -1 * this.width)
         }
         this.auto = true
         this.slideing = true
@@ -168,6 +191,12 @@ export default {
       this.auto = false
       window.clearTimeout(this.timer1)
     }
+  },
+  activated () {
+    this.autoPlay && this.infinite && this.setTime()
+  },
+  deactivated () {
+    window.clearTimeout(this.timer1)
   },
   beforeDestroy () {
     window.clearTimeout(this.timer1)
@@ -216,3 +245,4 @@ export default {
   }
 
 </style>
+
